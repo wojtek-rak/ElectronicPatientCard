@@ -6,32 +6,42 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using ElectronicPatientCard.Models;
+using ElectronicPatientCard.Services;
 
 namespace ElectronicPatientCard.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly IDataSourceService _dataSourceService;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(IDataSourceService dataSourceService)
         {
-            _logger = logger;
+            _dataSourceService = dataSourceService;
         }
 
         public IActionResult Index()
         {
             return View();
         }
+        public IActionResult Patients()
+        {
+            var patients = _dataSourceService.GetData<RequestBase>("Patient");
+            return View();
+        }
 
-        public IActionResult Privacy()
+        public IActionResult Observations()
         {
             return View();
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        public IActionResult Medications()
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return View();
+        }
+
+        public IActionResult MedicationsStatements()
+        {
+            return View();
         }
     }
 }
