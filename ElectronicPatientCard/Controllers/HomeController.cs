@@ -23,10 +23,22 @@ namespace ElectronicPatientCard.Controllers
         {
             return View();
         }
-        public IActionResult Patients()
+
+        public IActionResult Patients(string sortOrder)
         {
-            var patients = _dataSourceService.GetData<RequestBase>("Patient");
-            return View();
+            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            var patients = _dataSourceService.GetListData<ListPatient>("Patient");
+
+            if(sortOrder == "name_desc")
+            {
+                patients = patients.OrderByDescending(x => x.name.First().family);
+            }
+            else
+            {
+                patients = patients.OrderBy(x => x.name.First().family);
+            }
+
+            return View(patients);
         }
 
         public IActionResult Observations()

@@ -83,21 +83,7 @@ namespace ElectronicPatientCard.Models
         public IList<Telecom> telecom { get; set; }
     }
 
-    public class Resource
-    {
-        public string resourceType { get; set; }
-        public string id { get; set; }
-        public Meta meta { get; set; }
-        public Text text { get; set; }
-        public IList<Identifier> identifier { get; set; }
-        public IList<Name> name { get; set; }
-        public string gender { get; set; }
-        public string birthDate { get; set; }
-        public IList<Telecom> telecom { get; set; }
-        public BirthDate _birthDate { get; set; }
-        public IList<Address> address { get; set; }
-        public IList<Contact> contact { get; set; }
-    }
+ 
 
     public class Search
     {
@@ -107,7 +93,7 @@ namespace ElectronicPatientCard.Models
     public class Entry
     {
         public string fullUrl { get; set; }
-        public Resource resource { get; set; }
+        public object resource { get; set; }
         public Search search { get; set; }
     }
 

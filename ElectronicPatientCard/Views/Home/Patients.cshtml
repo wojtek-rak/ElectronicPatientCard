@@ -1,5 +1,34 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+﻿@model IEnumerable<ListPatient>
+
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Id
+            </th>
+            <th>
+                <a asp-action="Patients" asp-route-sortOrder="@ViewData["NameSortParm"]">Surename and name</a>
+            </th>
+        </tr>
+        @foreach (var patient in Model)
+        {
+            <tr>
+                <td>@patient.id</td>
+                <td>
+                    @patient.name.First().family
+                    @foreach (var given in @patient.name.First().given)
+                    {
+                        <text>&nbsp;</text>@given
+                    }
+                </td>
+            </tr>
+        }
+    </thead>
+</table>
