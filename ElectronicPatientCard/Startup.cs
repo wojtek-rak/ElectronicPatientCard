@@ -25,6 +25,7 @@ namespace ElectronicPatientCard
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddTransient<IDataSourceService, DataSourceService>();
+            services.AddDbContext<IwmdbContext>();
             services.AddControllersWithViews();
         }
 

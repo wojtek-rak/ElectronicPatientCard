@@ -13,12 +13,14 @@ namespace ElectronicPatientCard.Controllers
     public class HomeController : Controller
     {
         private readonly IDataSourceService _dataSourceService;
+        private readonly IwmdbContext _iwmdbContext;
 
         public static WeightGraph WeightGraphs { get; set; }
 
-        public HomeController(IDataSourceService dataSourceService)
+        public HomeController(IDataSourceService dataSourceService, IwmdbContext iwmdbContext)
         {
             _dataSourceService = dataSourceService;
+            _iwmdbContext = iwmdbContext;
         }
 
         public IActionResult Index()
@@ -87,6 +89,109 @@ namespace ElectronicPatientCard.Controllers
             WeightGraphs.DateTime = dateTimes;
             WeightGraphs.Weight = values;
 
+            var dbObservation = new List<ListObservation>();
+            foreach (var unit in observation)
+            {
+                if(unit.resourceType == "Observation")
+                {
+                    var baseUnit =  _iwmdbContext.Observation.Where(x => x.Id == unit.id && x.ResourceType == unit.resourceType);
+                    if(baseUnit.Count() > 1)
+                    {
+
+                    }
+                    if(baseUnit.Count() == 1)
+                    {
+                        var baseUnitFirst = baseUnit.First();
+                        var newUnit = unit;
+
+                        if(baseUnitFirst.LastUpdated != null)
+                        {
+                            newUnit.meta.lastUpdated = (DateTime)baseUnitFirst.LastUpdated;
+                        }
+                        if (baseUnitFirst.Text != null)
+                        {
+                            newUnit.code.text = baseUnitFirst.Text;
+                        }
+                        if (baseUnitFirst.Value != null)
+                        {
+                            newUnit.valueQuantity.value = (double)baseUnitFirst.Value;
+                        }
+                        dbObservation.Add(newUnit);
+                    }
+                    if(baseUnit.Count() == 0)
+                    {
+                        int ver = 1;
+                        int.TryParse(unit.meta.versionId, out ver);
+                        var newObservation = new Observation
+                        {
+                            Id = unit.id,
+                            LastUpdated = unit.meta.lastUpdated,
+                            LastChanged = unit.meta.lastUpdated,
+                            ResourceType = unit.resourceType,
+                            Text = unit.code.text,
+                            Value = (decimal)unit.valueQuantity.value,
+                            VersionId = ver
+                        };
+                        _iwmdbContext.Observation.Add(newObservation);
+                        _iwmdbContext.SaveChanges();
+                        dbObservation.Add(unit);
+                    }
+                }
+                else if (unit.resourceType == "MedicationStatement")
+                {
+                    var baseUnit = _iwmdbContext.Observation.Where(x => x.Id == unit.id && x.ResourceType == unit.resourceType);
+                    if (baseUnit.Count() > 1)
+                    {
+
+                    }
+                    if (baseUnit.Count() == 1)
+                    {
+                        var baseUnitFirst = baseUnit.First();
+                        var newUnit = unit;
+
+                        if (baseUnitFirst.LastUpdated != null)
+                        {
+                            newUnit.meta.lastUpdated = (DateTime)baseUnitFirst.LastUpdated;
+                        }
+                        if (baseUnitFirst.Text != null)
+                        {
+                            newUnit.medicationCodeableConcept.text = baseUnitFirst.Text;
+                        }
+                        if (baseUnitFirst.Value != null)
+                        {
+                            newUnit.dosage.First().doseQuantity.value = (int)baseUnitFirst.Value;
+                        }
+                        dbObservation.Add(newUnit);
+                    }
+                    if (baseUnit.Count() == 0)
+                    {
+                        int ver = 1;
+                        int.TryParse(unit.meta.versionId, out ver);
+                        var newObservation = new Observation
+                        {
+                            Id = unit.id,
+                            LastUpdated = unit.meta.lastUpdated,
+                            LastChanged = unit.meta.lastUpdated,
+                            ResourceType = unit.resourceType,
+                            Text = unit.medicationCodeableConcept.text,
+                            Value = unit.dosage.First().doseQuantity.value,
+                            VersionId = ver
+                        };
+                        _iwmdbContext.Observation.Add(newObservation);
+                        _iwmdbContext.SaveChanges();
+                        dbObservation.Add(unit);
+                    }
+                }
+            }
+
+
+
+
+
+
+
+
+
             var viewModel = new PatientViewModel() { Units = observation, PatientId = id };
 
             return View(viewModel);
@@ -116,6 +221,8 @@ namespace ElectronicPatientCard.Controllers
             {
                 specyfic.code = new Code() { coding = new List<Coding>() { new Coding()} };
             }
+
+
 
             return View(specyfic);
         }

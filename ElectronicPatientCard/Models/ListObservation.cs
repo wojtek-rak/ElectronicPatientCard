@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace ElectronicPatientCard.Models
 {
-    public class ListObservation
+    public class ListObservation : WasEdited
     {
         public string resourceType { get; set; }
         public string id { get; set; }
@@ -26,6 +26,13 @@ namespace ElectronicPatientCard.Models
         public MedicationCodeableConcept medicationCodeableConcept { get; set; }
         public string taken { get; set; }
         public IList<Dosage> dosage { get; set; }
+    }
+
+    public class WasEdited
+    {
+        public bool ValueWasEdited { get; set; }
+        public bool DataWasEdited { get; set; }
+        public bool TextWasEdited { get; set; }
     }
 
     public class Dosage

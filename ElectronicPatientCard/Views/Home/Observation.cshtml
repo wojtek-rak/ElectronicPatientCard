@@ -31,9 +31,14 @@
                 <td>Observation</td>
                 <td>@Model.code.text</td>
             </tr>
+
             <tr>
-                <td>Value</td>
-                <td>@Model.valueQuantity.value &nbsp;@Model.valueQuantity.unit</td>
+                <td>QuantityValue</td>
+                <td>@Model.valueQuantity.value</td>
+            </tr>
+            <tr>
+                <td>QuantityUnit</td>
+                <td>@Model.valueQuantity.unit</td>
             </tr>
         </thead>
     </table>
