@@ -1,43 +1,59 @@
 ﻿@model ListObservation
 
 <h1>@Model.resourceType</h1>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                Attribute
-            </th>
-            <th>
-                Value
-            </th>
-        </tr>
-        <tr>
-            <td>Id</td>
-            <td>@Model.id</td>
-        </tr>
-        <tr>
-            <td>Carried out</td>
-            <td>@Model.meta.lastUpdated</td>
-        </tr>
-        <tr>
-            <td>Code</td>
-            <td>@Model.medicationCodeableConcept.coding.First().code </td>
-        </tr>
-        <tr>
-            <td>Medication</td>
-            <td>@Model.medicationCodeableConcept.text</td>
-        </tr>
-        <tr>
-            <td>Dosage</td>
-            <td>@Model.dosage.First().text</td>
-        </tr>
-        <tr>
-            <td>QuantityValue</td>
-            <td>@Model.dosage.First().doseQuantity.value</td>
-        </tr>
-        <tr>
-            <td>QuantityUnit</td>
-            <td>@Model.dosage.First().doseQuantity.unit</td>
-        </tr>
-    </thead>
-</table>
+@using (Html.BeginForm("EditMedicationStatement", "Home", FormMethod.Post))
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Attribute
+                </th>
+                <th>
+                    Value
+                </th>
+                <th>
+                    Edit
+                </th>
+            </tr>
+            <tr>
+                <td>Id</td>
+                <td>@Model.id</td>
+            </tr>
+            <tr>
+                <td>Carried out</td>
+                <td>@Model.meta.lastUpdated</td>
+                <td><input type="date" name="CarriedOut" id="CarriedOut" value="@Model.meta.lastUpdated" /></td>
+            </tr>
+            <tr>
+                <td>Code</td>
+                <td>@Model.medicationCodeableConcept.coding.First().code </td>
+            </tr>
+            <tr>
+                <td>Medication</td>
+                <td>@Model.medicationCodeableConcept.text</td>
+                <td><input type="text" name="Text" id="Text" value=" @Model.medicationCodeableConcept.tex" /></td>
+            </tr>
+            <tr>
+                <td>Dosage</td>
+                <td>@Model.dosage.First().text</td>
+            </tr>
+            <tr>
+                <td>QuantityValue</td>
+                <td>@Model.dosage.First().doseQuantity.value</td>
+                <td><input type="number" name="Value" id="Value" value=@Model.dosage.First().doseQuantity.value /></td>
+            </tr>
+            <tr>
+                <td>QuantityUnit</td>
+                <td>@Model.dosage.First().doseQuantity.unit</td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="hidden" name="Id" value="@Model.id" />
+                    <input type="submit" value="Submit" />
+                </td>
+            </tr>
+        </thead>
+    </table>
+}
+

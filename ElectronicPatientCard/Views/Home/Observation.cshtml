@@ -1,6 +1,9 @@
 ﻿@model ListObservation
 
-    <h1>@Model.resourceType</h1>
+<h1>@Model.resourceType</h1>
+
+@using (Html.BeginForm("EditObservation", "Home", FormMethod.Post))
+{
     <table class="table">
         <thead>
             <tr>
@@ -10,6 +13,9 @@
                 <th>
                     Value
                 </th>
+                <th>
+                    Edit
+                </th>
             </tr>
             <tr>
                 <td>Id</td>
@@ -18,6 +24,7 @@
             <tr>
                 <td>Carried out</td>
                 <td>@Model.meta.lastUpdated</td>
+                <td><input type="date" name="CarriedOut" id="CarriedOut" value="@Model.meta.lastUpdated" /></td>
             </tr>
             <tr>
                 <td>Category</td>
@@ -30,15 +37,26 @@
             <tr>
                 <td>Observation</td>
                 <td>@Model.code.text</td>
+                <td><input type="text" name="Text" id="Text"  value="@Model.code.text" /></td>
             </tr>
 
             <tr>
                 <td>QuantityValue</td>
                 <td>@Model.valueQuantity.value</td>
+                <td><input type="number" name="Value" id="Value" value="@Model.valueQuantity.value" /></td>
             </tr>
             <tr>
                 <td>QuantityUnit</td>
                 <td>@Model.valueQuantity.unit</td>
             </tr>
+            <tr>
+                <td>
+                    <input type="hidden" name="Id" value="@Model.id" />
+                    <input type="submit" value="Submit" />
+                </td>
+            </tr>
+            
         </thead>
     </table>
+
+}

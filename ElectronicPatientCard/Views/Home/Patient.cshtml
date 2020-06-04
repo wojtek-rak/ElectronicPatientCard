@@ -58,23 +58,49 @@
         </tr>
         @foreach (var unit in Model.Units)
         {
-            <tr>
-                @if (unit.resourceType == "Observation")
-                {
-                    <td><a asp-action="Observation" asp-route-id=@unit.id asp-route-patientId="@Model.PatientId">@unit.id</a></td>
-                    <td>@unit.meta.lastUpdated</td>
-                    <td>Observation &nbsp; @unit.code.text</td>
+            if (unit.DataWasEdited || unit.TextWasEdited || unit.ValueWasEdited)
+            {
+                <tr style="background-color: yellow;">
+                    @if (unit.resourceType == "Observation")
+                    {
+                        <td><a asp-action="Observation" asp-route-id=@unit.id asp-route-patientId="@Model.PatientId">@unit.id</a></td>
+                        <td>@unit.meta.lastUpdated</td>
+                        <td>Observation &nbsp; @unit.code.text</td>
 
-                    <td>@unit.valueQuantity.value &nbsp;@unit.valueQuantity.unit</td>
+                        <td>@unit.valueQuantity.value &nbsp;@unit.valueQuantity.unit</td>
+                    }
+                    @if (unit.resourceType == "MedicationStatement")
+                    {
+                        <td><a asp-action="MedicationStatement" asp-route-id=@unit.id asp-route-patientId="@Model.PatientId">@unit.id</a></td>
+                        <td>@unit.meta.lastUpdated</td>
+                        <td>Medication &nbsp; Statement </td>
+                        <td>@unit.medicationCodeableConcept.text</td>
+                    }
+                </tr>
+            }
+            else
+            {
+                <tr style="background-color: yellow;">
+                    @if (unit.resourceType == "Observation")
+                    {
+                        <td><a asp-action="Observation" asp-route-id=@unit.id asp-route-patientId="@Model.PatientId">@unit.id</a></td>
+                        <td>@unit.meta.lastUpdated</td>
+                        <td>Observation &nbsp; @unit.code.text</td>
+
+                        <td>@unit.valueQuantity.value &nbsp;@unit.valueQuantity.unit</td>
+                    }
+                    @if (unit.resourceType == "MedicationStatement")
+                    {
+                        <td><a asp-action="MedicationStatement" asp-route-id=@unit.id asp-route-patientId="@Model.PatientId">@unit.id</a></td>
+                        <td>@unit.meta.lastUpdated</td>
+                        <td>Medication &nbsp; Statement </td>
+                        <td>@unit.medicationCodeableConcept.text</td>
+                    }
+                </tr>
+            }
+
+
+                   
                 }
-                @if (unit.resourceType == "MedicationStatement")
-                {
-                    <td><a asp-action="MedicationStatement" asp-route-id=@unit.id asp-route-patientId="@Model.PatientId">@unit.id</a></td>
-                    <td>@unit.meta.lastUpdated</td>
-                    <td>Medication &nbsp; Statement </td>
-                    <td>@unit.medicationCodeableConcept.text</td>
-                }
-            </tr>
-        }
-    </thead>
+            </thead>
 </table>

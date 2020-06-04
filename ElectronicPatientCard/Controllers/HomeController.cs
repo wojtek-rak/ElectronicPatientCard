@@ -73,21 +73,7 @@ namespace ElectronicPatientCard.Controllers
         {
             var observation = GetObservations(id);
 
-            WeightGraphs = new WeightGraph();
-            var values = observation
-                .Where(y => y.resourceType == "Observation")
-                .Where(x => x.code.coding.First().code == "3141-9")
-                .Select(t => (float)t.valueQuantity.value)
-                .ToList();
 
-            var dateTimes = observation
-                .Where(y => y.resourceType == "Observation")
-                .Where(x => x.code.coding.First().code == "3141-9")
-                .Select(t => t.meta.lastUpdated)
-                .ToList();
-
-            WeightGraphs.DateTime = dateTimes;
-            WeightGraphs.Weight = values;
 
             var dbObservation = new List<ListObservation>();
             foreach (var unit in observation)
@@ -97,7 +83,33 @@ namespace ElectronicPatientCard.Controllers
                     var baseUnit =  _iwmdbContext.Observation.Where(x => x.Id == unit.id && x.ResourceType == unit.resourceType);
                     if(baseUnit.Count() > 1)
                     {
+                        var maxUnit = baseUnit.Max(x => x.VersionId);
+                        var HighestUnit = baseUnit.First(x => x.VersionId == maxUnit);
 
+                        var newUnit = unit;
+
+                        if (HighestUnit.LastUpdated != null)
+                        {
+                            newUnit.meta.lastUpdated = (DateTime)HighestUnit.LastUpdated;
+                        }
+                        if (HighestUnit.Text != null)
+                        {
+                            newUnit.code.text = HighestUnit.Text;
+                        }
+                        if (HighestUnit.Value != null)
+                        {
+                            newUnit.valueQuantity.value = (double)HighestUnit.Value;
+                        }
+
+                        newUnit.OldListObservations = baseUnit.OrderByDescending(x => x.VersionId).Skip(1).Select(y =>
+                        new ListObservation
+                        {
+                            code = new Code { text = y.Text },
+                            meta = new Meta { lastUpdated = (DateTime)y.LastUpdated },
+                            valueQuantity = new ValueQuantity { value = (double)y.Value }
+                        }).ToList();
+
+                        dbObservation.Add(newUnit);
                     }
                     if(baseUnit.Count() == 1)
                     {
@@ -107,14 +119,17 @@ namespace ElectronicPatientCard.Controllers
                         if(baseUnitFirst.LastUpdated != null)
                         {
                             newUnit.meta.lastUpdated = (DateTime)baseUnitFirst.LastUpdated;
+                            newUnit.DataWasEdited = true;
                         }
                         if (baseUnitFirst.Text != null)
                         {
                             newUnit.code.text = baseUnitFirst.Text;
+                            newUnit.TextWasEdited = true;
                         }
                         if (baseUnitFirst.Value != null)
                         {
                             newUnit.valueQuantity.value = (double)baseUnitFirst.Value;
+                            newUnit.ValueWasEdited = true;
                         }
                         dbObservation.Add(newUnit);
                     }
@@ -142,7 +157,37 @@ namespace ElectronicPatientCard.Controllers
                     var baseUnit = _iwmdbContext.Observation.Where(x => x.Id == unit.id && x.ResourceType == unit.resourceType);
                     if (baseUnit.Count() > 1)
                     {
+                        var maxUnit = baseUnit.Max(x => x.VersionId);
+                        var HighestUnit = baseUnit.First(x => x.VersionId == maxUnit);
 
+                        var newUnit = unit;
+
+                        if (HighestUnit.LastUpdated != null)
+                        {
+                            newUnit.meta.lastUpdated = (DateTime)HighestUnit.LastUpdated;
+                            newUnit.DataWasEdited = true;
+                        }
+                        if (HighestUnit.Text != null)
+                        {
+                            newUnit.medicationCodeableConcept.text = HighestUnit.Text;
+                            newUnit.TextWasEdited = true;
+
+                        }
+                        if (HighestUnit.Value != null)
+                        {
+                            newUnit.dosage.First().doseQuantity.value = (int)HighestUnit.Value;
+                            newUnit.ValueWasEdited = true;
+
+                        }
+                        newUnit.OldListObservations = baseUnit.OrderByDescending(x => x.VersionId).Skip(1).Select(y =>
+                        new ListObservation
+                        {
+                            medicationCodeableConcept = new MedicationCodeableConcept { text = y.Text },
+                            meta = new Meta { lastUpdated = (DateTime)y.LastUpdated },
+                            dosage = new List<Dosage> { new Dosage {doseQuantity = new DoseQuantity { value = (int)y.Value } }  }
+                        }).ToList();
+
+                        dbObservation.Add(newUnit);
                     }
                     if (baseUnit.Count() == 1)
                     {
@@ -184,15 +229,27 @@ namespace ElectronicPatientCard.Controllers
                 }
             }
 
+            dbObservation = dbObservation.OrderBy(x => x.meta.lastUpdated).ToList();
 
+            WeightGraphs = new WeightGraph();
+            var values = dbObservation
+                .Where(y => y.resourceType == "Observation")
+                .Where(x => x.code.coding.First().code == "3141-9")
+                .Select(t => (float)t.valueQuantity.value)
+                .ToList();
 
+            var dateTimes = dbObservation
+                .Where(y => y.resourceType == "Observation")
+                .Where(x => x.code.coding.First().code == "3141-9")
+                .Select(t => t.meta.lastUpdated)
+                .ToList();
 
+            WeightGraphs.DateTime = dateTimes;
+            WeightGraphs.Weight = values;
 
+            dbObservation = dbObservation.OrderByDescending(x => x.meta.lastUpdated).ToList();
 
-
-
-
-            var viewModel = new PatientViewModel() { Units = observation, PatientId = id };
+            var viewModel = new PatientViewModel() { Units = dbObservation, PatientId = id };
 
             return View(viewModel);
         }
@@ -223,6 +280,60 @@ namespace ElectronicPatientCard.Controllers
             }
 
 
+            var baseUnit = _iwmdbContext.Observation.Where(x => x.Id == specyfic.id && x.ResourceType == specyfic.resourceType);
+            if (baseUnit.Count() > 1)
+            {
+                var maxUnit = baseUnit.Max(x => x.VersionId);
+                var HighestUnit = baseUnit.First(x => x.VersionId == maxUnit);
+
+                var newUnit = specyfic;
+
+                if (HighestUnit.LastUpdated != null)
+                {
+                    newUnit.meta.lastUpdated = (DateTime)HighestUnit.LastUpdated;
+                }
+                if (HighestUnit.Text != null)
+                {
+                    newUnit.code.text = HighestUnit.Text;
+                }
+                if (HighestUnit.Value != null)
+                {
+                    newUnit.valueQuantity.value = (double)HighestUnit.Value;
+                }
+
+                newUnit.OldListObservations = baseUnit.OrderByDescending(x => x.VersionId).Skip(1).Select(y =>
+                new ListObservation
+                {
+                    code = new Code { text = y.Text },
+                    meta = new Meta { lastUpdated = (DateTime)y.LastUpdated },
+                    valueQuantity = new ValueQuantity { value = (double)y.Value }
+                }).ToList();
+
+                specyfic = newUnit;
+            }
+            if (baseUnit.Count() == 1)
+            {
+                var baseUnitFirst = baseUnit.First();
+                var newUnit = specyfic;
+
+                if (baseUnitFirst.LastUpdated != null)
+                {
+                    newUnit.meta.lastUpdated = (DateTime)baseUnitFirst.LastUpdated;
+                    newUnit.DataWasEdited = true;
+                }
+                if (baseUnitFirst.Text != null)
+                {
+                    newUnit.code.text = baseUnitFirst.Text;
+                    newUnit.TextWasEdited = true;
+                }
+                if (baseUnitFirst.Value != null)
+                {
+                    newUnit.valueQuantity.value = (double)baseUnitFirst.Value;
+                    newUnit.ValueWasEdited = true;
+                }
+                specyfic = newUnit;
+            }
+
 
             return View(specyfic);
         }
@@ -251,7 +362,99 @@ namespace ElectronicPatientCard.Controllers
                 specyfic.dosage = new List<Dosage>() { new Dosage() { doseQuantity = new DoseQuantity() } };
             }
 
+            var baseUnit = _iwmdbContext.Observation.Where(x => x.Id == specyfic.id && x.ResourceType == specyfic.resourceType);
+            if (baseUnit.Count() > 1)
+            {
+                var maxUnit = baseUnit.Max(x => x.VersionId);
+                var HighestUnit = baseUnit.First(x => x.VersionId == maxUnit);
+
+                var newUnit = specyfic;
+
+                if (HighestUnit.LastUpdated != null)
+                {
+                    newUnit.meta.lastUpdated = (DateTime)HighestUnit.LastUpdated;
+                    newUnit.DataWasEdited = true;
+                }
+                if (HighestUnit.Text != null)
+                {
+                    newUnit.medicationCodeableConcept.text = HighestUnit.Text;
+                    newUnit.TextWasEdited = true;
+
+                }
+                if (HighestUnit.Value != null)
+                {
+                    newUnit.dosage.First().doseQuantity.value = (int)HighestUnit.Value;
+                    newUnit.ValueWasEdited = true;
+
+                }
+                newUnit.OldListObservations = baseUnit.OrderByDescending(x => x.VersionId).Skip(1).Select(y =>
+                new ListObservation
+                {
+                    medicationCodeableConcept = new MedicationCodeableConcept { text = y.Text },
+                    meta = new Meta { lastUpdated = (DateTime)y.LastUpdated },
+                    dosage = new List<Dosage> { new Dosage { doseQuantity = new DoseQuantity { value = (int)y.Value } } }
+                }).ToList();
+
+                specyfic = newUnit;
+            }
+            if (baseUnit.Count() == 1)
+            {
+                var baseUnitFirst = baseUnit.First();
+                var newUnit = specyfic;
+
+                if (baseUnitFirst.LastUpdated != null)
+                {
+                    newUnit.meta.lastUpdated = (DateTime)baseUnitFirst.LastUpdated;
+                }
+                if (baseUnitFirst.Text != null)
+                {
+                    newUnit.medicationCodeableConcept.text = baseUnitFirst.Text;
+                }
+                if (baseUnitFirst.Value != null)
+                {
+                    newUnit.dosage.First().doseQuantity.value = (int)baseUnitFirst.Value;
+                }
+                specyfic = newUnit;
+            }
+
             return View(specyfic);
+        }
+
+        [HttpPost]
+        public IActionResult EditObservation(UpdateModel updateModel)
+        {
+            UpdateEntity(updateModel, "Observation");
+            return RedirectToAction("Patients");
+
+        }
+
+        [HttpPost]
+        public IActionResult EditMedicationStatement(UpdateModel updateModel)
+        {
+            UpdateEntity(updateModel, "MedicationStatement");
+            return RedirectToAction("Patients");
+        }
+
+        private void UpdateEntity(UpdateModel updateModel, string resourceType)
+        {
+            var baseUnit = _iwmdbContext.Observation.Where(x => x.Id == updateModel.Id && x.ResourceType == resourceType);
+            var maxUnit = baseUnit.Max(x => x.VersionId );
+            var unit = baseUnit.First(x => x.VersionId == maxUnit);
+
+            int ver = maxUnit + 1;
+            var newObservation = new Observation
+            {
+                Id = unit.Id,
+                LastUpdated = updateModel.CarriedOut,
+                LastChanged = DateTime.Now,
+                ResourceType = resourceType,
+                Text = updateModel.Text,
+                Value = (decimal)updateModel.Value,
+                VersionId = ver
+            };
+            _iwmdbContext.Observation.Add(newObservation);
+            _iwmdbContext.SaveChanges();
+            //"MedicationStatement"
         }
 
         public ActionResult GetValues()

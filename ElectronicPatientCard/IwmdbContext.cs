@@ -30,7 +30,13 @@ namespace ElectronicPatientCard
         {
             modelBuilder.Entity<Observation>(entity =>
             {
-                entity.HasNoKey();
+                entity.HasKey(e => e.PrimaryId)
+                    .HasName("PK__Observat__5FFC813AF80372E4");
+
+                entity.Property(e => e.Id)
+                    .IsRequired()
+                    .HasMaxLength(200)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.LastChanged)
                     .HasColumnName("lastChanged")
@@ -39,8 +45,6 @@ namespace ElectronicPatientCard
                 entity.Property(e => e.LastUpdated)
                     .HasColumnName("lastUpdated")
                     .HasColumnType("date");
-
-                entity.Property(e => e.PrimaryId).ValueGeneratedOnAdd();
 
                 entity.Property(e => e.ResourceType)
                     .IsRequired()

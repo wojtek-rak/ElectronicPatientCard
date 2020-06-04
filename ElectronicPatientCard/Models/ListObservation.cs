@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc.Formatters;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -26,6 +27,8 @@ namespace ElectronicPatientCard.Models
         public MedicationCodeableConcept medicationCodeableConcept { get; set; }
         public string taken { get; set; }
         public IList<Dosage> dosage { get; set; }
+
+        public List<ListObservation> OldListObservations = new List<ListObservation>();
     }
 
     public class WasEdited
