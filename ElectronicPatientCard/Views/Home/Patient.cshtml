@@ -80,7 +80,7 @@
             }
             else
             {
-                <tr style="background-color: yellow;">
+                <tr>
                     @if (unit.resourceType == "Observation")
                     {
                         <td><a asp-action="Observation" asp-route-id=@unit.id asp-route-patientId="@Model.PatientId">@unit.id</a></td>

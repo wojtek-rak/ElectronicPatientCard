@@ -33,9 +33,9 @@ namespace ElectronicPatientCard.Models
 
     public class WasEdited
     {
-        public bool ValueWasEdited { get; set; }
-        public bool DataWasEdited { get; set; }
-        public bool TextWasEdited { get; set; }
+        public bool ValueWasEdited { get; set; } = false;
+        public bool DataWasEdited { get; set; } = false;
+        public bool TextWasEdited { get; set; } = false;
     }
 
     public class Dosage

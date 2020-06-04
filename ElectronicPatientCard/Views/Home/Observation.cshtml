@@ -21,11 +21,31 @@
                 <td>Id</td>
                 <td>@Model.id</td>
             </tr>
-            <tr>
-                <td>Carried out</td>
-                <td>@Model.meta.lastUpdated</td>
-                <td><input type="date" name="CarriedOut" id="CarriedOut" value="@Model.meta.lastUpdated" /></td>
-            </tr>
+
+            @if (Model.DataWasEdited)
+            {
+                <tr style="background-color: yellow;">
+                    <td>Carried out</td>
+                    <td>@Model.meta.lastUpdated</td>
+                    <td><input type="datetime" name="CarriedOut" id="CarriedOut" value="@Model.meta.lastUpdated" /></td>
+                </tr>
+                foreach (var item in Model.OldListObservations)
+                {
+                    <tr style="background-color: deepskyblue;">
+                        <td>Old: Carried out</td>
+                        <td>@item.meta.lastUpdated</td>
+                        <td></td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td>Carried out</td>
+                    <td>@Model.meta.lastUpdated</td>
+                    <td><input type="datetime" name="CarriedOut" id="CarriedOut" value="@Model.meta.lastUpdated" /></td>
+                </tr>
+            }
             <tr>
                 <td>Category</td>
                 <td>@Model.category.First().coding.First().display</td>
@@ -34,17 +54,66 @@
                 <td>Code</td>
                 <td>@Model.code.coding.First().code </td>
             </tr>
-            <tr>
-                <td>Observation</td>
-                <td>@Model.code.text</td>
-                <td><input type="text" name="Text" id="Text"  value="@Model.code.text" /></td>
-            </tr>
 
-            <tr>
-                <td>QuantityValue</td>
-                <td>@Model.valueQuantity.value</td>
-                <td><input type="number" name="Value" id="Value" value="@Model.valueQuantity.value" /></td>
-            </tr>
+
+
+            @if (Model.ValueWasEdited)
+            {
+                <tr style="background-color: yellow;">
+                    <td>Observation</td>
+                    <td>@Model.code.text</td>
+                    <td><input type="text" name="Text" id="Text" value="@Model.code.text" /></td>
+                </tr>
+                foreach (var item in Model.OldListObservations)
+                {
+                    <tr style="background-color: deepskyblue;">
+                        <td>Old: Observation</td>
+                        <td>@item.code.text</td>
+                        <td></td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td>Observation</td>
+                    <td>@Model.code.text</td>
+                    <td><input type="text" name="Text" id="Text" value="@Model.code.text" /></td>
+                </tr>
+            }
+
+
+
+
+
+
+            @if (Model.ValueWasEdited)
+            {
+                <tr style="background-color: yellow;">
+                    <td>QuantityValue</td>
+                    <td>
+                        @Model.valueQuantity.value
+                    </td>
+                    <td><input type="number" name="Value" id="Value" value="@Model.valueQuantity.value" /></td>
+                </tr>
+                foreach (var item in Model.OldListObservations)
+                {
+                    <tr style="background-color: deepskyblue;">
+                        <td>Old: QuantityValue</td>
+                        <td>@item.valueQuantity.value</td>
+                        <td></td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td>QuantityValue</td>
+                    <td>@Model.valueQuantity.value</td>
+                    <td><input type="number" name="Value" id="Value" value="@Model.valueQuantity.value" /></td>
+                </tr>
+            }
+
             <tr>
                 <td>QuantityUnit</td>
                 <td>@Model.valueQuantity.unit</td>
@@ -55,7 +124,7 @@
                     <input type="submit" value="Submit" />
                 </td>
             </tr>
-            
+
         </thead>
     </table>
 

@@ -91,14 +91,17 @@ namespace ElectronicPatientCard.Controllers
                         if (HighestUnit.LastUpdated != null)
                         {
                             newUnit.meta.lastUpdated = (DateTime)HighestUnit.LastUpdated;
+                            newUnit.DataWasEdited = true;
                         }
                         if (HighestUnit.Text != null)
                         {
                             newUnit.code.text = HighestUnit.Text;
+                            newUnit.TextWasEdited = true;
                         }
                         if (HighestUnit.Value != null)
                         {
                             newUnit.valueQuantity.value = (double)HighestUnit.Value;
+                            newUnit.ValueWasEdited = true;
                         }
 
                         newUnit.OldListObservations = baseUnit.OrderByDescending(x => x.VersionId).Skip(1).Select(y =>
@@ -119,17 +122,14 @@ namespace ElectronicPatientCard.Controllers
                         if(baseUnitFirst.LastUpdated != null)
                         {
                             newUnit.meta.lastUpdated = (DateTime)baseUnitFirst.LastUpdated;
-                            newUnit.DataWasEdited = true;
                         }
                         if (baseUnitFirst.Text != null)
                         {
                             newUnit.code.text = baseUnitFirst.Text;
-                            newUnit.TextWasEdited = true;
                         }
                         if (baseUnitFirst.Value != null)
                         {
                             newUnit.valueQuantity.value = (double)baseUnitFirst.Value;
-                            newUnit.ValueWasEdited = true;
                         }
                         dbObservation.Add(newUnit);
                     }
@@ -291,14 +291,17 @@ namespace ElectronicPatientCard.Controllers
                 if (HighestUnit.LastUpdated != null)
                 {
                     newUnit.meta.lastUpdated = (DateTime)HighestUnit.LastUpdated;
+                    newUnit.DataWasEdited = true;
                 }
                 if (HighestUnit.Text != null)
                 {
                     newUnit.code.text = HighestUnit.Text;
+                    newUnit.TextWasEdited = true;
                 }
                 if (HighestUnit.Value != null)
                 {
                     newUnit.valueQuantity.value = (double)HighestUnit.Value;
+                    newUnit.ValueWasEdited = true;
                 }
 
                 newUnit.OldListObservations = baseUnit.OrderByDescending(x => x.VersionId).Skip(1).Select(y =>
@@ -319,17 +322,14 @@ namespace ElectronicPatientCard.Controllers
                 if (baseUnitFirst.LastUpdated != null)
                 {
                     newUnit.meta.lastUpdated = (DateTime)baseUnitFirst.LastUpdated;
-                    newUnit.DataWasEdited = true;
                 }
                 if (baseUnitFirst.Text != null)
                 {
                     newUnit.code.text = baseUnitFirst.Text;
-                    newUnit.TextWasEdited = true;
                 }
                 if (baseUnitFirst.Value != null)
                 {
                     newUnit.valueQuantity.value = (double)baseUnitFirst.Value;
-                    newUnit.ValueWasEdited = true;
                 }
                 specyfic = newUnit;
             }

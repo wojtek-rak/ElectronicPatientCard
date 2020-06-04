@@ -20,29 +20,101 @@
                 <td>Id</td>
                 <td>@Model.id</td>
             </tr>
-            <tr>
-                <td>Carried out</td>
-                <td>@Model.meta.lastUpdated</td>
-                <td><input type="date" name="CarriedOut" id="CarriedOut" value="@Model.meta.lastUpdated" /></td>
-            </tr>
+
+            @if (Model.DataWasEdited)
+            {
+                <tr style="background-color: yellow;">
+                    <td>Carried out</td>
+                    <td>@Model.meta.lastUpdated</td>
+                    <td><input type="datetime" name="CarriedOut" id="CarriedOut" value="@Model.meta.lastUpdated" /></td>
+                </tr>
+                foreach (var item in Model.OldListObservations)
+                {
+                    <tr style="background-color: deepskyblue;">
+                        <td>Old: Carried out</td>
+                        <td>@item.meta.lastUpdated</td>
+                        <td></td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td>Carried out</td>
+                    <td>@Model.meta.lastUpdated</td>
+                    <td><input type="datetime" name="CarriedOut" id="CarriedOut" value="@Model.meta.lastUpdated" /></td>
+                </tr>
+            }
+
+
             <tr>
                 <td>Code</td>
                 <td>@Model.medicationCodeableConcept.coding.First().code </td>
             </tr>
-            <tr>
-                <td>Medication</td>
-                <td>@Model.medicationCodeableConcept.text</td>
-                <td><input type="text" name="Text" id="Text" value=" @Model.medicationCodeableConcept.tex" /></td>
-            </tr>
+
+            @if (Model.TextWasEdited)
+            {
+                <tr style="background-color: yellow;">
+                    <td>Medication</td>
+                    <td>@Model.medicationCodeableConcept.text</td>
+                    <td><input type="text" name="Text" id="Text" value=" @Model.medicationCodeableConcept.text" /></td>
+                </tr>
+                foreach (var item in Model.OldListObservations)
+                {
+                    <tr style="background-color: deepskyblue;">
+                        <td>Old: Medication</td>
+                        <td>@item.medicationCodeableConcept.text</td>
+                        <td></td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td>Medication</td>
+                    <td>@Model.medicationCodeableConcept.text</td>
+                    <td><input type="text" name="Text" id="Text" value=" @Model.medicationCodeableConcept.text" /></td>
+                </tr>
+            }
+
             <tr>
                 <td>Dosage</td>
                 <td>@Model.dosage.First().text</td>
             </tr>
+
+
+            @if (Model.TextWasEdited)
+            {
+                <tr style="background-color: yellow;">
+                    <td>QuantityValue</td>
+                    <td>@Model.dosage.First().doseQuantity.value</td>
+                    <td><input type="number" name="Value" id="Value" value=@Model.dosage.First().doseQuantity.value /></td>
+                </tr>
+                foreach (var item in Model.OldListObservations)
+                {
+                    <tr style="background-color: deepskyblue;">
+                        <td>Old: QuantityValue</td>
+                        <td>@item.dosage.First().doseQuantity.value</td>
+                        <td></td>
+                    </tr>
+                }
+            }
+            else
+            {
             <tr>
                 <td>QuantityValue</td>
                 <td>@Model.dosage.First().doseQuantity.value</td>
                 <td><input type="number" name="Value" id="Value" value=@Model.dosage.First().doseQuantity.value /></td>
-            </tr>
+              </tr>
+            }
+
+
+
+
+
+
+
+
             <tr>
                 <td>QuantityUnit</td>
                 <td>@Model.dosage.First().doseQuantity.unit</td>
