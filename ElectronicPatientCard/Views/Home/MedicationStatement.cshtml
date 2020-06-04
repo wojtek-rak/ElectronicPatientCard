@@ -1,0 +1,43 @@
+﻿@model ListObservation
+
+<h1>@Model.resourceType</h1>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Attribute
+            </th>
+            <th>
+                Value
+            </th>
+        </tr>
+        <tr>
+            <td>Id</td>
+            <td>@Model.id</td>
+        </tr>
+        <tr>
+            <td>Carried out</td>
+            <td>@Model.meta.lastUpdated</td>
+        </tr>
+        <tr>
+            <td>Code</td>
+            <td>@Model.medicationCodeableConcept.coding.First().code </td>
+        </tr>
+        <tr>
+            <td>Medication</td>
+            <td>@Model.medicationCodeableConcept.text</td>
+        </tr>
+        <tr>
+            <td>Dosage</td>
+            <td>@Model.dosage.First().text</td>
+        </tr>
+        <tr>
+            <td>QuantityValue</td>
+            <td>@Model.dosage.First().doseQuantity.value</td>
+        </tr>
+        <tr>
+            <td>QuantityUnit</td>
+            <td>@Model.dosage.First().doseQuantity.unit</td>
+        </tr>
+    </thead>
+</table>

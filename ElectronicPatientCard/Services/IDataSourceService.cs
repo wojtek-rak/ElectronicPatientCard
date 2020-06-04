@@ -7,6 +7,7 @@ namespace ElectronicPatientCard.Services
 {
     public interface IDataSourceService
     {
-        IEnumerable<T> GetListData<T>(string path);
+        IEnumerable<T> GetListData<T>(string path, int initCount);
+        T GetData<T>(string path) where T : new();
     }
 }

@@ -1,0 +1,80 @@
+﻿@model PatientViewModel
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+
+<div><span>Graph</span></div>
+
+<canvas id="myChart" width="300" height="150"></canvas>
+<script>
+    var years;
+
+    var africa;
+    $.ajax({
+        type: 'POST',
+        url: '@Url.Action("GetValues")',
+        success: function (result) {
+            console.log(result);
+            africa = result.weights;
+            years = result.dataTime;
+        }
+    })
+            .done(function (result){
+                console.log(years);
+                console.log(africa);
+
+                var ctx = document.getElementById("myChart");
+                var myChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: years,
+                        datasets: [
+                            {
+                                data: africa
+                            }
+                        ]
+                    }
+                });
+        });
+
+
+</script>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Id
+            </th>
+            <th>
+                Date of carried out
+            </th>
+            <th>
+                Informations
+            </th>
+            <th>
+                Informations
+            </th>
+        </tr>
+        @foreach (var unit in Model.Units)
+        {
+            <tr>
+                @if (unit.resourceType == "Observation")
+                {
+                    <td><a asp-action="Observation" asp-route-id=@unit.id asp-route-patientId="@Model.PatientId">@unit.id</a></td>
+                    <td>@unit.meta.lastUpdated</td>
+                    <td>Observation &nbsp; @unit.code.text</td>
+
+                    <td>@unit.valueQuantity.value &nbsp;@unit.valueQuantity.unit</td>
+                }
+                @if (unit.resourceType == "MedicationStatement")
+                {
+                    <td><a asp-action="MedicationStatement" asp-route-id=@unit.id asp-route-patientId="@Model.PatientId">@unit.id</a></td>
+                    <td>@unit.meta.lastUpdated</td>
+                    <td>Medication &nbsp; Statement </td>
+                    <td>@unit.medicationCodeableConcept.text</td>
+                }
+            </tr>
+        }
+    </thead>
+</table>

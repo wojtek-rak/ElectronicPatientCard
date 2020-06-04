@@ -21,15 +21,6 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Patients" asp-route-sortOrder="">Patients</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Observations">Observations</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Medications">Medications</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="MedicationsStatements">MedicationsStatements</a>
-                        </li>
                     </ul>
                 </div>
             </div>
@@ -50,5 +41,7 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @RenderSection("Scripts", required: false)
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script src="~/js/master.js"></script>
 </body>
 </html>

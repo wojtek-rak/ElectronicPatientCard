@@ -70,6 +70,8 @@ namespace ElectronicPatientCard.Models
     public class Coding
     {
         public string system { get; set; }
+        public string code { get; set; }
+        public string display { get; set; }
     }
 
     public class Relationship
@@ -107,3 +109,8 @@ namespace ElectronicPatientCard.Models
         public IList<Entry> entry { get; set; }
     }
 }
+
+
+
+
+

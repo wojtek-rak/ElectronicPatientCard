@@ -1,10 +1,4 @@
-﻿@model IEnumerable<ListPatient>
-
-
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+﻿@model List<ListPatient>
 
 
 <table class="table">
@@ -19,16 +13,21 @@
         </tr>
         @foreach (var patient in Model)
         {
-            <tr>
-                <td>@patient.id</td>
-                <td>
-                    @patient.name.First().family
-                    @foreach (var given in @patient.name.First().given)
-                    {
-                        <text>&nbsp;</text>@given
-                    }
-                </td>
-            </tr>
+    <tr>
+
+        
+
+        <td><a asp-action="Patient" asp-route-id=@patient.id>@patient.id</a></td>
+        <td>
+            @patient.name.First().family
+            @foreach (var given in @patient.name.First().given)
+            {
+                <text>&nbsp;</text>@given
+            }
+        </td>
+        <td>@patient.birthDate</td>
+        <td>@patient.gender</td>
+    </tr>
         }
     </thead>
 </table>
