@@ -1,7 +1,7 @@
 ﻿@model PatientViewModel
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+@*<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>*@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.bundle.min.js"></script>
 
 <div><span>Graph</span></div>
 
@@ -10,6 +10,8 @@
     var years;
 
     var africa;
+    var max;
+    var unit;
     $.ajax({
         type: 'POST',
         url: '@Url.Action("GetValues")',
@@ -17,15 +19,28 @@
             console.log(result);
             africa = result.weights;
             years = result.dataTime;
+            max = result.unit;
         }
     })
             .done(function (result){
                 console.log(years);
                 console.log(africa);
-
+                if (max == "Last Week") {
+                    unit = 'day'
+                }
+                if (max == "Last Year") {
+                    unit = 'month'
+                }
+                if (max == "Last Month") {
+                    unit = 'week'
+                }
+                if (max == "All") {
+                    unit = 'month'
+                }
                 var ctx = document.getElementById("myChart");
                 var myChart = new Chart(ctx, {
                     type: 'line',
+                    scaleStartValue: 0,
                     data: {
                         labels: years,
                         datasets: [
@@ -33,12 +48,38 @@
                                 data: africa
                             }
                         ]
-                    }
+                    },
+                    options: {
+                        scales: {
+                            xAxes: [{
+                                type: 'time',
+                                time: {
+                                    unit: unit
+                                }
+                            }],
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true
+                                }
+                            }]
+                        }
+                    },
                 });
         });
 
 
 </script>
+
+@using (Html.BeginForm("PatientFiltering", "Home", FormMethod.Post))
+{
+    <input type="datetime" name="DatePick" id="DatePick" value="@DateTime.Now" /><br />
+    <input type="radio" name="Filtering" value="All" /><text>&nbsp; All</text><br />
+    <input type="radio" name="Filtering" value="Last Year" /><text>&nbsp; Last Year</text><br />
+    <input type="radio" name="Filtering" value="Last Month" /><text>&nbsp; Last Month</text><br />
+    <input type="radio" name="Filtering" value="Last Week" /><text>&nbsp; Week</text><br />
+    <input type="hidden" name="Id" value="@Model.PatientId" /><br />
+    <input type="submit" value="Submit" />
+}
 
 <table class="table">
     <thead>
@@ -100,7 +141,7 @@
             }
 
 
-                   
-                }
-            </thead>
+
+        }
+    </thead>
 </table>

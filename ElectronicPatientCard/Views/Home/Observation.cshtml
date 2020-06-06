@@ -94,7 +94,7 @@
                     <td>
                         @Model.valueQuantity.value
                     </td>
-                    <td><input type="number" name="Value" id="Value" value="@Model.valueQuantity.value" /></td>
+                    <td><input asp-for="@Model.valueQuantity.value" name="Value" id="Value" value="@Model.valueQuantity.value" /></td>
                 </tr>
                 foreach (var item in Model.OldListObservations)
                 {
@@ -110,7 +110,7 @@
                 <tr>
                     <td>QuantityValue</td>
                     <td>@Model.valueQuantity.value</td>
-                    <td><input type="number" name="Value" id="Value" value="@Model.valueQuantity.value" /></td>
+                    <td><input asp-for="@Model.valueQuantity.value" name="Value" id="Value" value="@Model.valueQuantity.value" /></td>
                 </tr>
             }
 

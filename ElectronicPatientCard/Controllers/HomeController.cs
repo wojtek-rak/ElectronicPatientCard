@@ -69,7 +69,7 @@ namespace ElectronicPatientCard.Controllers
         }
 
         [HttpGet("Patient/{id}")]
-        public IActionResult Patient(string id)
+        public IActionResult Patient(string id, DateTime? dataTime = null, string filtering = null)
         {
             var observation = GetObservations(id);
 
@@ -231,21 +231,66 @@ namespace ElectronicPatientCard.Controllers
 
             dbObservation = dbObservation.OrderBy(x => x.meta.lastUpdated).ToList();
 
-            WeightGraphs = new WeightGraph();
-            var values = dbObservation
-                .Where(y => y.resourceType == "Observation")
-                .Where(x => x.code.coding.First().code == "3141-9")
-                .Select(t => (float)t.valueQuantity.value)
-                .ToList();
+            DateTime last = DateTime.Now;
 
-            var dateTimes = dbObservation
-                .Where(y => y.resourceType == "Observation")
-                .Where(x => x.code.coding.First().code == "3141-9")
-                .Select(t => t.meta.lastUpdated)
-                .ToList();
+            if (filtering == "Last Week")
+            {
+                last = dataTime.Value.AddDays(-7);
+            }
+            if (filtering == "Last Year")
+            {
+                last = dataTime.Value.AddDays(-365);
+            }
+            if (filtering == "Last Month")
+            {
+                last = dataTime.Value.AddDays(-31);
+            }
+            if (filtering == "All")
+            {
+                last = dataTime.Value.AddDays(-5000);
+            }
 
-            WeightGraphs.DateTime = dateTimes;
-            WeightGraphs.Weight = values;
+            if (filtering != null)
+            {
+                WeightGraphs = new WeightGraph();
+                var values = dbObservation
+                    .Where(y => y.resourceType == "Observation")
+                    .Where(x => x.code.coding.First().code == "3141-9")
+                    .Where(x => x.meta.lastUpdated > last && x.meta.lastUpdated < dataTime)
+                    .Select(t => (float)t.valueQuantity.value)
+                    .ToList();
+
+                var dateTimes = dbObservation
+                    .Where(y => y.resourceType == "Observation")
+                    .Where(x => x.code.coding.First().code == "3141-9")
+                    .Where(x => x.meta.lastUpdated > last && x.meta.lastUpdated < dataTime)
+                    .Select(t => t.meta.lastUpdated)
+                    .ToList();
+
+                WeightGraphs.DateTime = dateTimes;
+                WeightGraphs.Weight = values;
+                WeightGraphs.Max = filtering;
+            }
+            else
+            {
+                WeightGraphs = new WeightGraph();
+                var values = dbObservation
+                    .Where(y => y.resourceType == "Observation")
+                    .Where(x => x.code.coding.First().code == "3141-9")
+                    .Select(t => (float)t.valueQuantity.value)
+                    .ToList();
+
+                var dateTimes = dbObservation
+                    .Where(y => y.resourceType == "Observation")
+                    .Where(x => x.code.coding.First().code == "3141-9")
+                    .Select(t => t.meta.lastUpdated)
+                    .ToList();
+
+                WeightGraphs.DateTime = dateTimes;
+                WeightGraphs.Weight = values;
+            }
+
+            
 
             dbObservation = dbObservation.OrderByDescending(x => x.meta.lastUpdated).ToList();
 
@@ -435,6 +480,12 @@ namespace ElectronicPatientCard.Controllers
             return RedirectToAction("Patients");
         }
 
+        [HttpPost]
+        public IActionResult PatientFiltering(PatientFilter patientFIlter)
+        {
+            return RedirectToAction("Patient", "Home", new { id = patientFIlter .Id, filtering = patientFIlter.Filtering, dataTime = patientFIlter.DatePick });
+        }
+
         private void UpdateEntity(UpdateModel updateModel, string resourceType)
         {
             var baseUnit = _iwmdbContext.Observation.Where(x => x.Id == updateModel.Id && x.ResourceType == resourceType);
@@ -460,7 +511,7 @@ namespace ElectronicPatientCard.Controllers
         public ActionResult GetValues()
         {
 
-            return Json(new { weights = WeightGraphs.Weight, dataTime = WeightGraphs.DateTime });
+            return Json(new { weights = WeightGraphs.Weight, dataTime = WeightGraphs.DateTime, unit = WeightGraphs.Max });
         }
 
         private List<ListObservation> GetObservations(string patientId)
@@ -479,7 +530,7 @@ namespace ElectronicPatientCard.Controllers
             return observation;
         }
 
-        public static List<string> TempValid = new List<string> { "368307", "359417", "435927", "1326480" };
+        public static List<string> TempValid = new List<string> { "368307", "359417", "435927"};
 
 
 
