@@ -252,6 +252,11 @@ namespace ElectronicPatientCard.Controllers
 
             if (filtering != null)
             {
+                dbObservation = dbObservation
+                    .Where(x => x.meta.lastUpdated > last && x.meta.lastUpdated < dataTime)
+                    .ToList();
+
+
                 WeightGraphs = new WeightGraph();
                 var values = dbObservation
                     .Where(y => y.resourceType == "Observation")
